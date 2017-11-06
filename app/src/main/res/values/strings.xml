@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Journey</string>
+
+    <string name="title.activity.login">登录</string>
+    <string name="title.activity.register">注册</string>
+
+    <string name="title.button.login">登录</string>
+    <string name="title.button.register">注册</string>
+
+    <string name="hint.input.phone">手机号</string>
+    <string name="hint.input.password">密码</string>
+
+    <string name="title.link.have_an_account">已有账户？</string>
 </resources>

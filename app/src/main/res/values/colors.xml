@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="cyan_500">#00BCD4</color>
-    <color name="cyan_700">#0097A7</color>
-    <color name="cyan_a400">#00E5FF</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="grey_50">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+
+    <color name="orange_300">#FFB74D</color>
+    <color name="orange_500">#FF9800</color>
+    <color name="orange_700">#F57C00</color>
+    <color name="orange_a400">#FF9100</color>
 
 </resources>

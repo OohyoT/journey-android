@@ -1,7 +1,9 @@
-package com.journey.app;
+package com.journey.app.ui.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.journey.app.R;
 
 public class LoginActivity extends AppCompatActivity {
 
