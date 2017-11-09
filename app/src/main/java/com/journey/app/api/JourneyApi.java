@@ -1,40 +1,49 @@
 package com.journey.app.api;
 
-import com.journey.app.BuildConfig;
-import com.journey.app.Config;
+import com.journey.app.model.AuthInfo;
+import com.journey.app.model.FollowUserRequestBody;
+import com.journey.app.model.Result;
+import com.journey.app.model.UpdatePasswordRequestBody;
+import com.journey.app.model.User;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
-public class JourneyApi {
+public interface JourneyApi {
 
-    private static JourneyService service = null;
+    // User APIs
 
-    public static JourneyService getService() {
-        if (service == null) {
-            synchronized (JourneyApi.class) {
-                if (service == null) {
-                    Retrofit.Builder builder = new Retrofit.Builder();
+    @POST("user/regist")
+    Call<Result> register(@Body AuthInfo authInfo);
 
-                    if (BuildConfig.DEBUG) {
-                        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-                        OkHttpClient client = new OkHttpClient.Builder()
-                                .addInterceptor(interceptor)
-                                .build();
-                        builder.client(client);
-                    }
+    @POST("user/login")
+    Call<Result> login(@Body AuthInfo authInfo);
 
-                    Retrofit retrofit = builder.baseUrl(Config.API_BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    service = retrofit.create(JourneyService.class);
-                }
-            }
-        }
-        return service;
-    }
+    @POST("user/password")
+    Call<Result> updatePassword(@Body UpdatePasswordRequestBody body);
+
+    @GET("user/{id}")
+    Call<Result> getUser(@Path("id") int id);
+
+    @POST("user")
+    Call<Result> updateUserInfo(@Body User user);
+
+    @POST("user/follow")
+    Call<Result> followUser(@Body FollowUserRequestBody body);
+
+    @DELETE("user/deleteFollow")
+    Call<Result> unfollowUser(@Body FollowUserRequestBody body);
+
+    @GET("user/friends?loginUserId={loggedInUserId}")
+    Call<Result> getFollowingUsers(@Path("loggedInUserId") int loggedInUserId);
+
+    // Article APIs
+
+    @GET("travels/{id}")
+    Call<Result> getTravel(@Path("id") int id);
 
 }

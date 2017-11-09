@@ -1,4 +1,4 @@
-package com.journey.app.api;
+package com.journey.app.model;
 
 import com.google.gson.annotations.SerializedName;
 

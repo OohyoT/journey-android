@@ -19,8 +19,20 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="PrimaryTextAppearance" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/black_alpha87</item>
+    </style>
+
+    <style name="SecondaryTextAppearance" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/black_alpha54</item>
+    </style>
+
     <style name="HintTextAppearance" parent="@android:style/TextAppearance.Material.Small">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

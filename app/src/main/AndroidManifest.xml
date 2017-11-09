@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
+        android:name=".JourneyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -27,6 +28,11 @@
         <activity
             android:name=".ui.activity.EntryActivity"
             android:theme="@style/EntryTheme">
+        </activity>
+        <activity
+            android:name=".ui.activity.HomeActivity"
+            android:label="@string/title.activity.home"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

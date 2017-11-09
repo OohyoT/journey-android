@@ -9,10 +9,10 @@ import android.view.View;
 import android.widget.Button;
 
 import com.journey.app.R;
-import com.journey.app.api.AuthInfo;
+import com.journey.app.model.AuthInfo;
+import com.journey.app.util.Api;
 import com.journey.app.api.JourneyApi;
-import com.journey.app.api.JourneyService;
-import com.journey.app.api.Result;
+import com.journey.app.model.Result;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
         String phone = phoneEditor.getText().toString();
         String password = phoneEditor.getText().toString();
 
-        JourneyService service = JourneyApi.getService();
+        JourneyApi service = Api.getApiInstance();
         Call<Result> register = service.register(new AuthInfo(phone, password));
         register.enqueue(new Callback<Result>() {
             @Override public void onResponse(Call<Result> call, Response<Result> response) {
