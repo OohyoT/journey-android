@@ -135,4 +135,13 @@ public class Pref {
         pref.edit().putLong(key, value).apply();
     }
 
+    /**
+     * Removes a key from preferences.
+     *
+     * @param key key to be removed
+     */
+    public static void remove(String key) {
+        pref.edit().remove(key).apply();
+    }
+
 }

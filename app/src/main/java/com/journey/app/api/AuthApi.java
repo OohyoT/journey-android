@@ -2,14 +2,10 @@ package com.journey.app.api;
 
 import com.journey.app.model.AuthInfo;
 import com.journey.app.model.FollowUserRequestBody;
-import com.journey.app.model.Fragment;
 import com.journey.app.model.LoginResult;
 import com.journey.app.model.Result;
-import com.journey.app.model.Travel;
 import com.journey.app.model.UpdatePasswordRequestBody;
 import com.journey.app.model.User;
-
-import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -18,9 +14,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface JourneyApi {
-
-    // User APIs
+public interface AuthApi {
 
     @POST("user/regist")
     Call<Result> register(@Body AuthInfo authInfo);
@@ -45,19 +39,5 @@ public interface JourneyApi {
 
     @GET("user/friends?loginUserId={loggedInUserId}")
     Call<Result> getFollowingUsers(@Path("loggedInUserId") int loggedInUserId);
-
-    // Article APIs
-
-    @GET("fragment?_sort=time&_order=desc")
-    Call<ArrayList<Fragment>> getHomeFragments();
-
-    @GET("travel?_sort=time&_order=desc")
-    Call<ArrayList<Travel>> getHomeTravels();
-
-    @GET("fragment/{id}")
-    Call<Fragment> getFragment(@Path("id") int id);
-
-    @GET("travel/{id}?_embed=fragment")
-    Call<Travel> getTravel(@Path("id") int id);
 
 }

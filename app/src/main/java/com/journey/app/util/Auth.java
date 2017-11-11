@@ -14,6 +14,11 @@ public class Auth {
         Pref.set(PREF_LOGINED, true);
     }
 
+    public static void logout() {
+        Pref.remove(PREF_LOGINED_USER_ID);
+        Pref.set(PREF_LOGINED, false);
+    }
+
     public static int getLoggedInUserId() {
         return Pref.getInteger(PREF_LOGINED_USER_ID);
     }

@@ -4,15 +4,16 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.journey.app.R;
-import com.journey.app.model.AuthInfo;
-import com.journey.app.util.Api;
+import com.journey.app.api.AuthApi;
 import com.journey.app.api.JourneyApi;
+import com.journey.app.model.AuthInfo;
 import com.journey.app.model.Result;
+import com.journey.app.util.Api;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,17 +58,23 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void register() {
         String phone = phoneEditor.getText().toString();
-        String password = phoneEditor.getText().toString();
+        String password = passwordEditor.getText().toString();
 
-        JourneyApi service = Api.getApiInstance();
-        Call<Result> register = service.register(new AuthInfo(phone, password));
+        AuthApi api = Api.getAuthApiInstance();
+        Call<Result> register = api.register(new AuthInfo(phone, password));
         register.enqueue(new Callback<Result>() {
-            @Override public void onResponse(Call<Result> call, Response<Result> response) {
-                Log.i("Register", response.message());
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                Result result = response.body();
+                Toast.makeText(getApplicationContext(), result.message, Toast.LENGTH_SHORT).show();
+                if (result.code.equals(Result.SUCCESS)) {
+                    finish();
+                }
             }
 
-            @Override public void onFailure(Call<Result> call, Throwable t) {
-                Log.e("Register", t.getLocalizedMessage());
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

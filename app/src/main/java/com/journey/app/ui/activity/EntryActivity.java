@@ -14,6 +14,8 @@ import butterknife.ButterKnife;
 
 public class EntryActivity extends AppCompatActivity {
 
+    private final static int REQUEST_LOGIN = 0;
+
     @BindView(R.id.button_register) AppCompatButton registerButton;
     @BindView(R.id.link_login) AppCompatTextView loginLink;
 
@@ -43,9 +45,18 @@ public class EntryActivity extends AppCompatActivity {
     private void initLoginLink() {
         loginLink.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) {
-                startActivity(new Intent(EntryActivity.this, LoginActivity.class));
+                startActivityForResult(
+                        new Intent(EntryActivity.this, LoginActivity.class),
+                        REQUEST_LOGIN);
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_LOGIN && resultCode == RESULT_OK) {
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
 }
