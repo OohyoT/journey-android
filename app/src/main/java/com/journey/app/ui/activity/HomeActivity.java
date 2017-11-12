@@ -69,9 +69,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         if (checkAuthStatus()) {
             loadLoggedInUser();
+            loadHomeTimeline();
+            loadExplore();
         }
-        loadHomeTimeline();
-        loadExplore();
     }
 
     @Override
