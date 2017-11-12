@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.journey.app.R;
-import com.journey.app.api.AuthApi;
 import com.journey.app.api.JourneyApi;
 import com.journey.app.model.CardItem;
 import com.journey.app.model.Fragment;
@@ -27,6 +26,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
@@ -98,7 +98,7 @@ public class HomeActivity extends AppCompatActivity {
         profile = new ProfileDrawerItem()
                 .withIdentifier(1L)
                 .withName("User")
-                .withIcon(R.drawable.avatar)
+                .withIcon(R.drawable.avatar3)
                 .withEmail("12345678912");
         accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -116,11 +116,26 @@ public class HomeActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(accountHeader)
+                .addDrawerItems(new PrimaryDrawerItem().withName("首页"),
+                        new PrimaryDrawerItem().withName("我的足迹"),
+                        new PrimaryDrawerItem().withName("我的收藏"),
+                        new PrimaryDrawerItem().withName("设置"),
+                        new PrimaryDrawerItem().withName("反馈"))
                 .build();
     }
 
     private void initTabs() {
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        sectionsPagerAdapter.setOnRefreshHomeListener(new SectionsPagerAdapter.OnRefreshHomeListener() {
+            @Override public void onRefreshHome() {
+                loadHomeTimeline();
+            }
+        });
+        sectionsPagerAdapter.setOnRefreshExploreListener(new SectionsPagerAdapter.OnRefreshExploreListener() {
+            @Override public void onRefreshExplore() {
+                loadExplore();
+            }
+        });
         sectionsPagerAdapter.setOnViewTravelListener(new SectionsPagerAdapter.OnViewTravelListener() {
             @Override public void onViewTravel(int travelId) {
                 Intent viewTravelIntent = new Intent(HomeActivity.this, TravelActivity.class);
@@ -153,7 +168,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initFab() {
-        // TODO: init fab
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this, SendActivity.class));
+            }
+        });
     }
 
     private boolean checkAuthStatus() {
@@ -168,8 +187,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadLoggedInUser() {
         int loggedInUserId = Auth.getLoggedInUserId();
-        AuthApi api = Api.getAuthApiInstance();
-        Call<User> getUser = api.getUser(loggedInUserId);
+        JourneyApi api = Api.getApiInstance();
+        Call<User> getUser = api.getUser(3);
         getUser.enqueue(new Callback<User>() {
             @Override public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();
@@ -178,6 +197,7 @@ public class HomeActivity extends AppCompatActivity {
                     checkAuthStatus();
                 } else {
                     profile.withName(user.username);
+                    profile.withEmail(user.phone);
                     accountHeader.updateProfile(profile);
                 }
             }
@@ -195,6 +215,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override public void onResponse(Call<ArrayList<Fragment>> call, Response<ArrayList<com.journey.app.model.Fragment>> response) {
                 ArrayList<com.journey.app.model.Fragment> fragments = response.body();
                 sectionsPagerAdapter.setHomeTimeline(fragments);
+                sectionsPagerAdapter.stopHomeRefreshing();
             }
 
             @Override public void onFailure(Call<ArrayList<Fragment>> call, Throwable t) {
@@ -210,6 +231,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override public void onResponse(Call<ArrayList<Travel>> call, Response<ArrayList<Travel>> response) {
                 ArrayList<Travel> travels = response.body();
                 sectionsPagerAdapter.setExplore(travels);
+                sectionsPagerAdapter.stopExploreRefreshing();
             }
 
             @Override public void onFailure(Call<ArrayList<Travel>> call, Throwable t) {
@@ -220,11 +242,29 @@ public class HomeActivity extends AppCompatActivity {
 
     public static class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        public interface OnRefreshHomeListener {
+            void onRefreshHome();
+        }
+
+        public interface OnRefreshExploreListener {
+            void onRefreshExplore();
+        }
+
         public interface OnViewTravelListener {
             void onViewTravel(int travelId);
         }
 
+        private OnRefreshHomeListener onRefreshHomeListener;
+        private OnRefreshExploreListener onRefreshExploreListener;
         private OnViewTravelListener onViewTravelListener;
+
+        public void setOnRefreshHomeListener(OnRefreshHomeListener listener) {
+            this.onRefreshHomeListener = listener;
+        }
+
+        public void setOnRefreshExploreListener(OnRefreshExploreListener listener) {
+            this.onRefreshExploreListener = listener;
+        }
 
         public void setOnViewTravelListener(OnViewTravelListener listener) {
             onViewTravelListener = listener;
@@ -234,9 +274,31 @@ public class HomeActivity extends AppCompatActivity {
         private CardListFragment exploreFragment = new CardListFragment();
         private CardListFragment topicsFragment = new CardListFragment();
 
+        public void stopHomeRefreshing() {
+            homeFragment.stopRefreshing();
+        }
+
+        public void stopExploreRefreshing() {
+            exploreFragment.stopRefreshing();
+        }
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
 
+            homeFragment.setOnRefreshListener(new CardListFragment.OnRefreshListener() {
+                @Override public void onRefresh() {
+                    if (onRefreshHomeListener != null) {
+                        onRefreshHomeListener.onRefreshHome();
+                    }
+                }
+            });
+            exploreFragment.setOnRefreshListener(new CardListFragment.OnRefreshListener() {
+                @Override public void onRefresh() {
+                    if (onRefreshExploreListener != null) {
+                        onRefreshExploreListener.onRefreshExplore();
+                    }
+                }
+            });
             exploreFragment.setOnViewTravelListener(new CardListFragment.OnViewTravelListener() {
                 @Override public void onViewTravel(int travelId) {
                     if (onViewTravelListener != null) {

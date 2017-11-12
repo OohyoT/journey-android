@@ -6,9 +6,10 @@ public class User {
 
     public int id;
     public String username;
+    public String phone;
     public String location;
+    @SerializedName("avatar")
     public int pictureId;
-    @SerializedName("sex")
     public String gender;
 
 }

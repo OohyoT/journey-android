@@ -45,6 +45,10 @@ public class CardListFragment extends Fragment {
         });
     }
 
+    public void stopRefreshing() {
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,10 +68,22 @@ public class CardListFragment extends Fragment {
         initRecycler();
     }
 
+    public interface OnRefreshListener {
+        void onRefresh();
+    }
+
+    private OnRefreshListener onRefreshListener;
+
+    public void setOnRefreshListener(OnRefreshListener listener) {
+        this.onRefreshListener = listener;
+    }
+
     private void initSrl() {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(false);
+                if (onRefreshListener != null) {
+                    onRefreshListener.onRefresh();
+                }
             }
         });
     }

@@ -14,6 +14,7 @@ import com.journey.app.model.CardItem;
 import com.journey.app.model.FragmentCardItem;
 import com.journey.app.model.Travel;
 import com.journey.app.model.TravelCardItem;
+import com.journey.app.model.User;
 import com.journey.app.util.CheatUtil;
 
 import java.util.ArrayList;
@@ -49,13 +50,25 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                 com.journey.app.model.Fragment fragment = ((FragmentCardItem) items.get(position)).fragment;
                 FragmentCardViewHolder fragmentHolder = (FragmentCardViewHolder) holder;
 
-                fragmentHolder.content.setText(fragment.content);
-                fragmentHolder.location.setText(fragment.location);
+                if (fragment.content.length() > 0) {
+                    fragmentHolder.content.setVisibility(View.VISIBLE);
+                    fragmentHolder.content.setText(fragment.content);
+                } else {
+                    fragmentHolder.content.setVisibility(View.GONE);
+                }
+                fragmentHolder.location.setText("@" + fragment.location);
                 if (fragment.imageId > 0) {
                     fragmentHolder.image.setVisibility(View.VISIBLE);
                     int imageResId = CheatUtil.getImageResId(fragment.imageId);
                     fragmentHolder.image.setImageResource(imageResId);
+                } else {
+                    fragmentHolder.image.setVisibility(View.GONE);
                 }
+                fragmentHolder.time.setText(fragment.time);
+
+                User user = CheatUtil.getUser(fragment.userId);
+                fragmentHolder.nickname.setText(user.username);
+                fragmentHolder.avatar.setImageResource(CheatUtil.getAvatarResId(user.pictureId));
 
                 break;
             case CardItem.TRAVEL:
@@ -73,6 +86,9 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                         }
                     }
                 });
+
+                User travelUser = CheatUtil.getUser(travel.userId);
+                travelHolder.avatar.setImageResource(CheatUtil.getAvatarResId(travelUser.pictureId));
 
                 break;
             case CardItem.TOPIC:

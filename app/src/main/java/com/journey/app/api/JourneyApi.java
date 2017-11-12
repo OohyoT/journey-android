@@ -60,4 +60,10 @@ public interface JourneyApi {
     @GET("travel/{id}?_embed=fragment")
     Call<Travel> getTravel(@Path("id") int id);
 
+    @POST("fragment")
+    Call<Fragment> addFragment(@Body Fragment fragment);
+
+    @GET("fragment?_sort=id&_order=desc&_limit=1")
+    Call<ArrayList<Fragment>> getLatestFragment();
+
 }
