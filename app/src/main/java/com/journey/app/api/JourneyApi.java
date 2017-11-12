@@ -17,6 +17,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface JourneyApi {
 
@@ -56,6 +57,9 @@ public interface JourneyApi {
 
     @GET("fragment/{id}")
     Call<Fragment> getFragment(@Path("id") int id);
+
+    @GET("fragment")
+    Call<ArrayList<Fragment>> getUserFragments(@Query("userId") int userId);
 
     @GET("travel/{id}?_embed=fragment")
     Call<Travel> getTravel(@Path("id") int id);

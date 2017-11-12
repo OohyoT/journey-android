@@ -1,6 +1,8 @@
 package com.journey.app.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -28,7 +30,9 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.squareup.seismic.ShakeDetector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +75,8 @@ public class HomeActivity extends AppCompatActivity {
             loadLoggedInUser();
             loadHomeTimeline();
             loadExplore();
+
+            initShake();
         }
     }
 
@@ -116,16 +122,27 @@ public class HomeActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(accountHeader)
-                .addDrawerItems(new PrimaryDrawerItem().withName("首页"),
-                        new PrimaryDrawerItem().withName("我的足迹"),
+                .addDrawerItems(new PrimaryDrawerItem().withName("首页").withIdentifier(0L),
+                        new PrimaryDrawerItem().withName("我的足迹").withIdentifier(1L),
                         new PrimaryDrawerItem().withName("我的收藏"),
                         new PrimaryDrawerItem().withName("设置"),
                         new PrimaryDrawerItem().withName("反馈"))
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        if (drawerItem.getIdentifier() == 1L) {
+                            Intent intent = new Intent(HomeActivity.this, MyFragmentsActivity.class);
+                            intent.putExtra("USER_ID", 3);
+                            startActivity(intent);
+                            return true;
+                        }
+                        return false;
+                    }
+                })
                 .build();
     }
 
     private void initTabs() {
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
         sectionsPagerAdapter.setOnRefreshHomeListener(new SectionsPagerAdapter.OnRefreshHomeListener() {
             @Override public void onRefreshHome() {
                 loadHomeTimeline();
@@ -240,6 +257,17 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private void initShake() {
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        ShakeDetector shakeDetector = new ShakeDetector(new ShakeDetector.Listener() {
+            @Override public void hearShake() {
+                sectionsPagerAdapter.startHomeRefreshing();
+                loadHomeTimeline();
+            }
+        });
+        shakeDetector.start(sensorManager);
+    }
+
     public static class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public interface OnRefreshHomeListener {
@@ -270,9 +298,13 @@ public class HomeActivity extends AppCompatActivity {
             onViewTravelListener = listener;
         }
 
-        private CardListFragment homeFragment = new CardListFragment();
-        private CardListFragment exploreFragment = new CardListFragment();
-        private CardListFragment topicsFragment = new CardListFragment();
+        private CardListFragment homeFragment;
+        private CardListFragment exploreFragment;
+        private CardListFragment topicsFragment;
+
+        public void startHomeRefreshing() {
+            homeFragment.startRefreshing();
+        }
 
         public void stopHomeRefreshing() {
             homeFragment.stopRefreshing();
@@ -282,8 +314,12 @@ public class HomeActivity extends AppCompatActivity {
             exploreFragment.stopRefreshing();
         }
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        public SectionsPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
+
+            homeFragment = new CardListFragment(context);
+            exploreFragment = new CardListFragment(context);
+            topicsFragment = new CardListFragment(context);
 
             homeFragment.setOnRefreshListener(new CardListFragment.OnRefreshListener() {
                 @Override public void onRefresh() {

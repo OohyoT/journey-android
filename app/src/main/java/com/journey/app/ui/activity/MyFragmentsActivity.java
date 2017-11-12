@@ -12,7 +12,6 @@ import com.journey.app.api.JourneyApi;
 import com.journey.app.model.CardItem;
 import com.journey.app.model.Fragment;
 import com.journey.app.model.FragmentCardItem;
-import com.journey.app.model.Travel;
 import com.journey.app.ui.adapter.CardListAdapter;
 import com.journey.app.util.Api;
 
@@ -25,23 +24,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TravelActivity extends AppCompatActivity {
+public class MyFragmentsActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.recycler) RecyclerView recyclerView;
 
-    private int travelId;
     private CardListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_travel);
+        setContentView(R.layout.activity_my_fragments);
 
         ButterKnife.bind(this);
         initView();
 
-        loadTravel();
+        loadFragments();
     }
 
     private void initView() {
@@ -65,20 +63,20 @@ public class TravelActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void loadTravel() {
-        int travelId = getIntent().getIntExtra("TRAVEL_ID", 0);
-        if (travelId <= 0) {
+    private void loadFragments() {
+        int userId = getIntent().getIntExtra("USER_ID", 0);
+        if (userId <= 0) {
             finish();
             return;
         }
 
         JourneyApi api = Api.getApiInstance();
-        Call<Travel> getTravel = api.getTravel(travelId);
-        getTravel.enqueue(new Callback<Travel>() {
-            @Override public void onResponse(Call<Travel> call, Response<Travel> response) {
-                Travel travel = response.body();
+        Call<ArrayList<Fragment>> getUserFragments = api.getUserFragments(userId);
+        getUserFragments.enqueue(new Callback<ArrayList<Fragment>>() {
+            @Override public void onResponse(Call<ArrayList<Fragment>> call, Response<ArrayList<Fragment>> response) {
+                List<Fragment> fragments = response.body();
                 List<CardItem> items = new ArrayList<>();
-                for (Fragment fragment : travel.fragments) {
+                for (Fragment fragment : fragments) {
                     FragmentCardItem item = new FragmentCardItem();
                     item.fragment = fragment;
 
@@ -95,7 +93,7 @@ public class TravelActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
 
-            @Override public void onFailure(Call<Travel> call, Throwable t) {
+            @Override public void onFailure(Call<ArrayList<Fragment>> call, Throwable t) {
 
             }
         });

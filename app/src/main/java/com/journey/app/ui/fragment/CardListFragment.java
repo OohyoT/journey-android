@@ -1,6 +1,9 @@
 package com.journey.app.ui.fragment;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,9 +36,11 @@ public class CardListFragment extends Fragment {
     @BindView(R.id.srl) SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.recycler) RecyclerView recyclerView;
 
-    private CardListAdapter adapter = new CardListAdapter();
+    private CardListAdapter adapter;
 
-    public CardListFragment() {
+    @SuppressLint("ValidFragment")
+    public CardListFragment(Context context) {
+        adapter = new CardListAdapter(context);
         adapter.setOnViewTravelListener(new CardListAdapter.OnViewTravelListener() {
             @Override public void onViewTravel(int travelId) {
                 if (onViewTravelListener != null) {
@@ -45,8 +50,26 @@ public class CardListFragment extends Fragment {
         });
     }
 
+    public void startRefreshing() {
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
+    }
+
     public void stopRefreshing() {
-        swipeRefreshLayout.setRefreshing(false);
+        new CountDownTimer(1000, 1000) {
+
+            @Override public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override public void onFinish() {
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+
+        }.start();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.journey.app.ui.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.journey.app.model.Travel;
 import com.journey.app.model.TravelCardItem;
 import com.journey.app.model.User;
 import com.journey.app.util.CheatUtil;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,12 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
     public void setItems(List<CardItem> items) {
         this.items = items;
+    }
+
+    private Context context;
+
+    public CardListAdapter(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -60,7 +68,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                 if (fragment.imageId > 0) {
                     fragmentHolder.image.setVisibility(View.VISIBLE);
                     int imageResId = CheatUtil.getImageResId(fragment.imageId);
-                    fragmentHolder.image.setImageResource(imageResId);
+                    Picasso.with(context).load(imageResId).into(fragmentHolder.image);
                 } else {
                     fragmentHolder.image.setVisibility(View.GONE);
                 }
@@ -78,7 +86,8 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                 travelHolder.title.setText(travel.title);
                 travelHolder.location.setText(travel.location);
                 travelHolder.likeCount.setText(String.valueOf(travel.likeCount));
-                travelHolder.image.setImageResource(CheatUtil.getImageResId(travel.imageId));
+                Picasso.with(context).load(CheatUtil.getImageResId(travel.imageId))
+                        .into(travelHolder.image);
                 travelHolder.setOnTravelCardClickListener(new TravelCardViewHolder.OnTravelCardClickListener() {
                     @Override public void onCLick() {
                         if (onViewTravelListener != null) {
